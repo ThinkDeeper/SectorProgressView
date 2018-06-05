@@ -31,6 +31,7 @@ public class ColorfulRingProgressView extends View {
     private Paint mPaint;
 
     private ObjectAnimator animator;
+    private boolean mShowBgColor = true;
 
     public ColorfulRingProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -73,7 +74,9 @@ public class ColorfulRingProgressView extends View {
 
         mPaint.setShader(null);
         mPaint.setColor(mBgColor);
-        canvas.drawArc(mOval, 0, 360, false, mPaint);
+        if (mShowBgColor) {
+            canvas.drawArc(mOval, 0, 360, false, mPaint);
+        }
 
         mPaint.setShader(mShader);
         canvas.drawArc(mOval, mStartAngle, mPercent * 3.6f, false, mPaint);
@@ -151,6 +154,13 @@ public class ColorfulRingProgressView extends View {
         refreshTheLayout();
     }
 
+    public void setBgColor(int bgColor){
+        mBgColor = bgColor;
+    }
+
+    public void showBgColor(boolean showBgColor){
+        mShowBgColor = showBgColor;
+    }
 
     public float getStartAngle() {
         return mStartAngle;
@@ -166,7 +176,7 @@ public class ColorfulRingProgressView extends View {
     }
 
     public void animateIndeterminate(int durationOneCircle,
-                                     TimeInterpolator interpolator) {
+            TimeInterpolator interpolator) {
         animator = ObjectAnimator.ofFloat(this, "startAngle", getStartAngle(), getStartAngle() + 360);
         if (interpolator != null) animator.setInterpolator(interpolator);
         animator.setDuration(durationOneCircle);
