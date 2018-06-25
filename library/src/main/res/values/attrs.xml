@@ -5,6 +5,7 @@
     <attr name="fgColor" format="color" />
     <attr name="percent" format="float" />
     <attr name="startAngle" format="float" />
+    <attr name="direction" format="integer" />
 
     <declare-styleable name="SectorProgressView">
         <attr name="bgColor" />
@@ -20,6 +21,7 @@
         <attr name="strokeWidth" format="dimension" />
         <attr name="percent" />
         <attr name="startAngle" />
+        <attr name="direction" />
     </declare-styleable>
 
 </resources>

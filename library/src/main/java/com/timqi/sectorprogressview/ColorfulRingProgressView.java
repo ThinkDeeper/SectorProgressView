@@ -17,7 +17,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 public class ColorfulRingProgressView extends View {
 
+    public static final int CLOCK_WISE = 1;
+    public static final int COUNTER_CLOCK_WISE = -1;
 
+    private int mDirection = CLOCK_WISE;
     private float mPercent = 75;
     private float mStrokeWidth;
     private int mBgColor = 0xffe1e1e1;
@@ -49,6 +52,7 @@ public class ColorfulRingProgressView extends View {
             mPercent = a.getFloat(R.styleable.ColorfulRingProgressView_percent, 75);
             mStartAngle = a.getFloat(R.styleable.ColorfulRingProgressView_startAngle, 0)+270;
             mStrokeWidth = a.getDimensionPixelSize(R.styleable.ColorfulRingProgressView_strokeWidth, dp2px(21));
+            mDirection = a.getInt(R.styleable.ColorfulRingProgressView_direction, CLOCK_WISE);
         } finally {
             a.recycle();
         }
@@ -79,7 +83,7 @@ public class ColorfulRingProgressView extends View {
         }
 
         mPaint.setShader(mShader);
-        canvas.drawArc(mOval, mStartAngle, mPercent * 3.6f, false, mPaint);
+        canvas.drawArc(mOval, mStartAngle, mDirection * mPercent * 3.6f, false, mPaint);
     }
 
     @Override
@@ -160,6 +164,14 @@ public class ColorfulRingProgressView extends View {
 
     public void showBgColor(boolean showBgColor){
         mShowBgColor = showBgColor;
+    }
+
+    public void setDirection(boolean clockWise){
+        mDirection = clockWise ? CLOCK_WISE : COUNTER_CLOCK_WISE;
+    }
+
+    public boolean isClockWiseDirection(){
+        return mDirection == CLOCK_WISE;
     }
 
     public float getStartAngle() {
