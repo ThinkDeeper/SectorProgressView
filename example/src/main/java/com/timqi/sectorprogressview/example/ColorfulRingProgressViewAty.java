@@ -1,5 +1,7 @@
 package com.timqi.sectorprogressview.example;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -62,7 +64,13 @@ public class ColorfulRingProgressViewAty extends AppCompatActivity {
             public void onClick(View view) {
                 boolean animating = (boolean) view.getTag();
                 if (animating) {
-                    crpv.stopAnimateIndeterminate();
+                    crpv.stopAnimateIndeterminate(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                            crpv.stopAnimateIndeterminate(null);
+                            crpv.stopAnimateIndeterminate();
+                        }
+                    });
                     btnAnimate.setTag(false);
                     btnAnimate.setText("animateIndeterminate");
                 } else {

@@ -1,5 +1,9 @@
 package com.timqi.sectorprogressview;
 
+import java.lang.annotation.Native;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
@@ -13,7 +17,6 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-
 
 public class ColorfulRingProgressView extends View {
 
@@ -36,13 +39,13 @@ public class ColorfulRingProgressView extends View {
     private ObjectAnimator animator;
     private boolean mShowBgColor = true;
 
+    private AnimatorListenerAdapter mListenerAdapter;
+
     public ColorfulRingProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                R.styleable.ColorfulRingProgressView,
-                0,0);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ColorfulRingProgressView, 0, 0);
 
         try {
             mBgColor = a.getColor(R.styleable.ColorfulRingProgressView_bgColor, 0xffe1e1e1);
@@ -50,7 +53,7 @@ public class ColorfulRingProgressView extends View {
 
             mFgColorStart = a.getColor(R.styleable.ColorfulRingProgressView_fgColorStart, 0xffffe400);
             mPercent = a.getFloat(R.styleable.ColorfulRingProgressView_percent, 75);
-            mStartAngle = a.getFloat(R.styleable.ColorfulRingProgressView_startAngle, 0)+270;
+            mStartAngle = a.getFloat(R.styleable.ColorfulRingProgressView_startAngle, 0) + 270;
             mStrokeWidth = a.getDimensionPixelSize(R.styleable.ColorfulRingProgressView_strokeWidth, dp2px(21));
             mDirection = a.getInt(R.styleable.ColorfulRingProgressView_direction, CLOCK_WISE);
         } finally {
@@ -92,8 +95,7 @@ public class ColorfulRingProgressView extends View {
 
         updateOval();
 
-        mShader = new LinearGradient(mOval.left, mOval.top,
-                mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
+        mShader = new LinearGradient(mOval.left, mOval.top, mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
     }
 
     public float getPercent() {
@@ -119,8 +121,7 @@ public class ColorfulRingProgressView extends View {
     private void updateOval() {
         int xp = getPaddingLeft() + getPaddingRight();
         int yp = getPaddingBottom() + getPaddingTop();
-        mOval = new RectF(getPaddingLeft() + mStrokeWidth, getPaddingTop() + mStrokeWidth,
-                getPaddingLeft() + (getWidth() - xp) - mStrokeWidth,
+        mOval = new RectF(getPaddingLeft() + mStrokeWidth, getPaddingTop() + mStrokeWidth, getPaddingLeft() + (getWidth() - xp) - mStrokeWidth,
                 getPaddingTop() + (getHeight() - yp) - mStrokeWidth);
     }
 
@@ -142,8 +143,7 @@ public class ColorfulRingProgressView extends View {
 
     public void setFgColorStart(int mFgColorStart) {
         this.mFgColorStart = mFgColorStart;
-        mShader = new LinearGradient(mOval.left, mOval.top,
-                mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
+        mShader = new LinearGradient(mOval.left, mOval.top, mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
         refreshTheLayout();
     }
 
@@ -153,24 +153,23 @@ public class ColorfulRingProgressView extends View {
 
     public void setFgColorEnd(int mFgColorEnd) {
         this.mFgColorEnd = mFgColorEnd;
-        mShader = new LinearGradient(mOval.left, mOval.top,
-                mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
+        mShader = new LinearGradient(mOval.left, mOval.top, mOval.left, mOval.bottom, mFgColorStart, mFgColorEnd, Shader.TileMode.MIRROR);
         refreshTheLayout();
     }
 
-    public void setBgColor(int bgColor){
+    public void setBgColor(int bgColor) {
         mBgColor = bgColor;
     }
 
-    public void showBgColor(boolean showBgColor){
+    public void showBgColor(boolean showBgColor) {
         mShowBgColor = showBgColor;
     }
 
-    public void setDirection(boolean clockWise){
+    public void setDirection(boolean clockWise) {
         mDirection = clockWise ? CLOCK_WISE : COUNTER_CLOCK_WISE;
     }
 
-    public boolean isClockWiseDirection(){
+    public boolean isClockWiseDirection() {
         return mDirection == CLOCK_WISE;
     }
 
@@ -187,13 +186,22 @@ public class ColorfulRingProgressView extends View {
         animateIndeterminate(800, new AccelerateDecelerateInterpolator());
     }
 
-    public void animateIndeterminate(int durationOneCircle,
-            TimeInterpolator interpolator) {
+    public void animateIndeterminate(int durationOneCircle, TimeInterpolator interpolator) {
         animator = ObjectAnimator.ofFloat(this, "startAngle", getStartAngle(), getStartAngle() + 360);
-        if (interpolator != null) animator.setInterpolator(interpolator);
+        if (interpolator != null) {
+            animator.setInterpolator(interpolator);
+        }
         animator.setDuration(durationOneCircle);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setRepeatMode(ValueAnimator.RESTART);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                if (mListenerAdapter != null) {
+                    mListenerAdapter.onAnimationRepeat(animation);
+                }
+            }
+        });
         animator.start();
     }
 
@@ -202,5 +210,9 @@ public class ColorfulRingProgressView extends View {
             animator.cancel();
             animator = null;
         }
+    }
+
+    public void stopAnimateIndeterminate(AnimatorListenerAdapter listenerAdapter) {
+        mListenerAdapter = listenerAdapter;
     }
 }
