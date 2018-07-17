@@ -215,4 +215,13 @@ public class ColorfulRingProgressView extends View {
     public void stopAnimateIndeterminate(AnimatorListenerAdapter listenerAdapter) {
         mListenerAdapter = listenerAdapter;
     }
+
+    /**
+     * Checks whether or not is progress animating.
+     *
+     * @return return true if indeterminate progress is in process.
+     */
+    public boolean isAnimateIndeterminate() {
+        return animator != null;
+    }
 }
